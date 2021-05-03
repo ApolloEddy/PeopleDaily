@@ -77,7 +77,31 @@ Public Class Apinion : Inherits People
 			Downloaded += 1
 		Next
 	End Sub
+	Public Overloads Sub DownloadChaptersInSingleFile(chapterList As List(Of Chapter), path As String)
+		If Not FileManager.FileExists(path) Then IO.Directory.CreateDirectory(path)
+		Dim baseString As New Text.StringBuilder
+		Dim clist As New List(Of Chapter)
+		For Each chapter As Chapter In chapterList
+			Console.Write($"正在下载{chapter.Title} - {chapter.Author}...")
+			clist.Add(GetChapterContent(chapter))
+			baseString.Append(clist.Last.Content + vbNewLine)
+			Downloaded += 1
+			Console.WriteLine("成功！")
+		Next
+		path += "\人民日报时评.txt" ' + clist(0).Time + "-" + clist.Last.Time + ".txt"
+		path = path.Replace("-", "_")
+		IO.File.CreateText(path).Write(baseString.ToString)
+	End Sub
 
+	Public Overloads Sub AutoGetInSingleFile(path As String)
+		Console.Write("正在获取文章信息...")
+		Dim chapterList = GetChapterList(Apinion_Review_Url)
+		Console.WriteLine("完毕！")
+		Console.WriteLine($"共{chapterList.Count}篇文章。开始下载！")
+		Console.WriteLine()
+		DownloadChaptersInSingleFile(chapterList, path)
+		Console.WriteLine($"下载完毕！共 [{Downloaded}] 篇文章。")
+	End Sub
 	' 整合到一个方法
 	''' <summary>
 	''' 自动下载时评文章

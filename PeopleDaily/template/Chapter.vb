@@ -6,6 +6,7 @@ Public Structure Chapter
 	Dim Time As String
 	Dim Author As String
 	Dim Source As String
+	Dim Content As String
 	Sub New(title As String, link As String)
 		Me.Title = title
 		Me.Link = link

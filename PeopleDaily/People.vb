@@ -31,6 +31,12 @@ Public MustInherit Class People
 	Public Overloads Function DownloadChapter(chapter As Chapter, path As String) As Chapter
 		'If Not FileManager.FileExists(path) Then Throw New ArgumentException($"路径 ""{path}"" 不存在！")
 		Console.Write($"正在下载文章 ""{chapter.Title}"" ...")
+		path += "\" + chapter.GenerateFileName("{tit}_{aut}") + ".txt"
+		FileManager.SaveText(path, GetChapterContent(chapter).Content)
+		Console.WriteLine("成功！")
+		Return chapter
+	End Function
+	Public Overloads Function GetChapterContent(chapter As Chapter) As Chapter
 		For i = 1 To 6
 			Try
 				Dim page As String = TextParser.TrimNewlineChars(GetPageContent(chapter.Link))
@@ -44,22 +50,17 @@ Public MustInherit Class People
 				content.Replace("<span id=""paper_num"">", "").Replace("</span>", "")
 				' 获取文章更多信息
 				chapter = chapter.ParseTimeAuthorSource(block)
-				path += "\" + chapter.GenerateFileName("{tit}_{aut}") + ".txt"
-				' 保存文件
-				FileManager.SaveText(path, content.ToString)
-				Console.WriteLine("成功！")
-				Return chapter
+				chapter.Content = content.ToString
+				Exit For
 			Catch ex As Exception
 				If i = 6 Then
 					PutsError(ex.Message)
 					If Not Downloaded = -1 Then Downloaded -= 1
-					Return chapter
 				End If
 				If i = 1 Then Console.WriteLine()
 				PutsError(ex.Message + $"　正在进行第 [{i + 1}] 次下载...")
 			End Try
 		Next
-
 		Return chapter
 	End Function
 	''' <summary>

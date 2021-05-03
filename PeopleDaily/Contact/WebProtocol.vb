@@ -83,6 +83,7 @@ Namespace Zero
 				Try
 					response = request.GetResponse()
 					Threading.Thread.Sleep(RequestInterval)
+					Exit For
 				Catch ex As Exception
 					If Not i = 6 Then Continue For
 					Throw ex
